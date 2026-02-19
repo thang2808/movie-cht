@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHT</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="movies-container">
+        <h1>Đi coi phimmm!!! 🔥</h1>
+        <div class="date-picker">
+            <label for="movie-date">Ngày đi coi phim nè 📅</label>
+            <input type="date" id="movie-date">
+            <p id="date-message" class="date-message"></p>
+        </div>
+        <div class="movie-selection" id="movie-selection" style="display: none;">
+            <h3>Danh sách phim đang chiếu 🎥</h3>
+            <div class="movie-list">
+                <label><input type="radio" name="movie" value="NHÀ BA TÔI MỘT PHÒNG">NHÀ BA TÔI MỘT PHÒNG</label>
+                <label><input type="radio" name="movie" value="BÁU VẬT TRỜI CHO">BÁU VẬT TRỜI CHO</label>
+                <label><input type="radio" name="movie" value="THỎ ƠI!!">THỎ ƠI!!</label>
+                <label><input type="radio" name="movie" value="MÙI PHỞ">MÙI PHỞ</label>
+                <label><input type="radio" name="movie" value="BIỆT ĐỘI THÚ CƯNG: CUỘC CHIẾN TRÊN ĐƯỜNG RAY">BIỆT ĐỘI THÚ CƯNG: CUỘC CHIẾN TRÊN ĐƯỜNG RAY</label>
+                <label><input type="radio" name="movie" value="THỎ GÀ DU XUÂN ĐẠI NÁO ĐỊA ĐẠO">THỎ GÀ DU XUÂN ĐẠI NÁO ĐỊA ĐẠO</label>
+                <label><input type="radio" name="movie" value="TUYỂN THỦ DÊ - “MÙI” VỊ CHIẾN THẮNG">TUYỂN THỦ DÊ - “MÙI” VỊ CHIẾN THẮNG</label>
+                <label><input type="radio" name="movie" value="PHI VỤ ĐỘNG TRỜI 2">PHI VỤ ĐỘNG TRỜI 2</label>
+                <label><input type="radio" name="movie" value="AVATAR 3: LỬA VÀ TRO TÀN">AVATAR 3: LỬA VÀ TRO TÀN</label>
+                <label><input type="radio" name="movie" value="KUMANTHONG ĐÀI LOAN: OÁN THAI ĐÒI MẸ">KUMANTHONG ĐÀI LOAN: OÁN THAI ĐÒI MẸ</label>
+                <label><input type="radio" name="movie" value="RUNNING MAN VIỆT NAM MÙA 3 - CON RỐI TỰ DO">RUNNING MAN VIỆT NAM MÙA 3 - CON RỐI TỰ DO</label>
+                <label><input type="radio" name="movie" value="TIỂU YÊU QUÁI NÚI LÃNG LÃNG">TIỂU YÊU QUÁI NÚI LÃNG LÃNG</label>
+                <label><input type="radio" name="movie" value="HUYỀN TÌNH DẠ TRẠCH">HUYỀN TÌNH DẠ TRẠCH</label>
+                <label><input type="radio" name="movie" value="TẦM TẦN KÝ">TẦM TẦN KÝ</label>
+            </div>
+        </div>
+        <button id="final-confirm" class="btn btn-yes" style="margin-top: 1rem; display: none;">
+            Xác nhận đặt lịch 🎟
+        </button>
+    </div>
+    <div id="success-screen" style="display: none;" class="success-screen">
+        <h1>🎉 Chúc mừng!!! 🎉</h1>
+        <p id="success-message"></p>
+    </div>
+
+    <script>
+        const dateInput = document.getElementById('movie-date');
+        const movieSelection = document.getElementById('movie-selection');
+        const dateMessage = document.getElementById('date-message');
+        const finalConfirmBtn = document.getElementById('final-confirm');
+
+        let isDateValid = false;
+
+        function checkShowConfirmButton() {
+            const selectedMovie = document.querySelector('input[name="movie"]:checked');
+
+            if (isDateValid && selectedMovie) {
+                finalConfirmBtn.style.display = "inline-block";
+            } else {
+                finalConfirmBtn.style.display = "none";
+            }
+        }
+
+        // Kiểm tra ngày realtime
+        dateInput.addEventListener('change', () => {
+
+            if (!dateInput.value) {
+                dateMessage.textContent = "";
+                movieSelection.style.display = "none";
+                isDateValid = false;
+                checkShowConfirmButton();
+                return;
+            }
+
+            const selectedDate = new Date(dateInput.value);
+            const today = new Date();
+
+            today.setHours(0, 0, 0, 0);
+            selectedDate.setHours(0, 0, 0, 0);
+
+            const diffTime = selectedDate - today;
+            const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+            if (diffDays < 0) {
+                dateMessage.textContent = "❌ Ngày này qua rồi ní ơi -.-.-";
+                dateMessage.style.color = "red";
+                movieSelection.style.display = "none";
+                isDateValid = false;
+                checkShowConfirmButton();
+                return;
+            }
+
+            if (diffDays > 7) {
+                dateMessage.textContent = "⚠ Lâu quá... chọn ngày gần gần thui em -.-";
+                dateMessage.style.color = "orange";
+                movieSelection.style.display = "none";
+                isDateValid = false;
+                checkShowConfirmButton();
+                return;
+            }
+
+            dateMessage.textContent = "✅ Okie! Giờ chọn phim đi nè 🎬";
+            dateMessage.style.color = "#4CAF50";
+            movieSelection.style.display = "block";
+            isDateValid = true;
+
+            checkShowConfirmButton();
+        });
+
+        // Khi chọn phim
+        document.addEventListener('change', function(e) {
+            if (e.target.name === "movie") {
+                checkShowConfirmButton();
+            }
+        });
+
+        const successScreen = document.getElementById('success-screen');
+        const moviesContainer = document.querySelector('.movies-container');
+        const successMessage = document.getElementById('success-message');
+
+        finalConfirmBtn.addEventListener('click', async () => {
+    const selectedMovie = document.querySelector('input[name="movie"]:checked');
+
+    if (!isDateValid || !selectedMovie) return;
+
+    const movieName = selectedMovie.value;
+    const selectedDate = dateInput.value;
+
+    finalConfirmBtn.disabled = true;
+    finalConfirmBtn.textContent = "Đang gửi... ⏳";
+
+    // THAY BẰNG URL WEB APP BẠN VỪA COPY
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzezacXYwImi-frZ4nrZ1ln6u3-qu3x-Hng0DrZuDGDt9zu3HasROJ19L9YQ-ZsSWTvmw/exec';  
+
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',           // giữ nguyên vì GAS không hỗ trợ CORS đầy đủ
+            redirect: 'follow',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                movieName: movieName,
+                selectedDate: selectedDate
+            })
+        });
+
+        // Vì no-cors → không đọc được response, ta giả định thành công nếu không lỗi
+        successMessage.innerHTML = 
+            `Bạn đã đặt lịch xem <strong>${movieName}</strong><br>` +
+            `vào ngày <strong>${selectedDate}</strong> cùng CHT 🎉`;
+
+        moviesContainer.style.display = "none";
+        successScreen.style.display = "flex";
+
+    } catch (error) {
+        console.error('Lỗi:', error);
+        alert("Có lỗi khi gửi! Kiểm tra lại URL hoặc kết nối nhé.");
+        finalConfirmBtn.disabled = false;
+        finalConfirmBtn.textContent = "Xác nhận đặt lịch 🎟";
+    }
+});
+
+
+    </script>
+
+</body>
+</html>
